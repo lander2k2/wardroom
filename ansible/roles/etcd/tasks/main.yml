@@ -2,7 +2,7 @@
 - name: download and extract etcd binaries
   unarchive:
     remote_src: True
-    src: "{{ etcd_release_url }}"
+    src: "{{ etcd_release_url_internal }}"
     dest: /tmp
     creates: /usr/local/bin/etcd
 

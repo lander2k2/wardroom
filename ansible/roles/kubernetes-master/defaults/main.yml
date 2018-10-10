@@ -1,7 +1,7 @@
 ---
 kubernetes_master:
   kubeadm_config:
-    kubernetesVersion: 1.9.5
+    kubernetesVersion: "{{ kubernetes_version | kube_version }}"
     api:
       advertiseAddress: "{{ kubernetes_common_api_ip }}"
     apiServerExtraArgs:

@@ -1,0 +1,15 @@
+---
+- name: update control plane
+  hosts: masters
+  become: yes
+  roles:
+  - kubernetes
+  - kubernetes-master
+  tags: ['upgrade-control-plane']
+
+- name: update the workers
+  hosts: nodes
+  become: yes
+  roles:
+  - kubernetes
+  tags: ['upgrade-workers']

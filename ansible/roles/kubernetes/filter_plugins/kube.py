@@ -6,6 +6,7 @@ class FilterModule(object):
     def filters(self):
         return {
             'kube_platform_version': self.kube_platform_version,
+            'kube_version': self.kube_version,
         }
 
     def kube_platform_version(self, version, platform):
@@ -26,3 +27,6 @@ class FilterModule(object):
                 return version
 
         raise Exception("Could not parse kubernetes version")
+
+    def kube_version(self, version):
+        return version.split('-')[0]

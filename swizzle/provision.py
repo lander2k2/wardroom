@@ -16,6 +16,7 @@
 ### WARNING: there is no error checking and this is not well tested! ###
 
 import argparse
+import json
 import os
 import re
 import subprocess
@@ -23,6 +24,11 @@ import tempfile
 import random
 import sys
 import ConfigParser
+
+PLAYBOOKS = {
+    'install': 'swizzle.yml',
+    'upgrade': 'upgrade.yml',
+}
 
 
 def vagrant_status():
@@ -53,7 +59,7 @@ def vagrant_ssh_config(tempfile):
         fh.write(output)
 
 
-def run_ansible(inventory_file, extra_args=[]):
+def run_ansible(action, version, inventory_file, extra_args=[]):
     """ Run ansible playbook via subprocess.
     We do not want to link ansible as it is GPL """
 
@@ -68,7 +74,9 @@ def run_ansible(inventory_file, extra_args=[]):
         "ansible-playbook",
         "-i",
         inventory_file,
-        "swizzle.yml"] + extra_args, env=ansible_env)
+        "-e",
+        json.dumps({'kubernetes_version': version, 'wardroom_action': action}),
+        PLAYBOOKS[action]] + extra_args, env=ansible_env)
 
 
 def generate_inventory(node_state={}):
@@ -108,6 +116,9 @@ def generate_inventory(node_state={}):
 
 def main():
     parser = argparse.ArgumentParser()
+    parser.add_argument('action', default='install',
+                        choices=['install', 'upgrade'])
+    parser.add_argument('version')
     args, extra_args = parser.parse_known_args()
 
     node_state = vagrant_status()
@@ -123,7 +134,7 @@ def main():
 
     node_state = vagrant_status()
     inventory_file = generate_inventory(node_state)
-    run_ansible(inventory_file, extra_args)
+    run_ansible(args.action, args.version, inventory_file, extra_args)
 
 
 if __name__ == '__main__':
